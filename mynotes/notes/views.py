@@ -1,10 +1,9 @@
-from rest_framework.mixins import UpdateModelMixin
+from rest_framework.mixins import UpdateModelMixin, DestroyModelMixin
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.viewsets import ModelViewSet, GenericViewSet
 
 from .models import Note, UserBookRelation, Book
-from .permissions import IsOwnerOrStaffreadOnly
-from .serializers import NoteSerializer, UserBookRelationSerializer, BookSerializer
+from .serializers import NoteSerializer, UserBookRelationSerializer, BookSerializer, BookDetailSerializer
 
 
 class NoteModelViewSet(ModelViewSet):
@@ -15,8 +14,13 @@ class NoteModelViewSet(ModelViewSet):
 class BooksModelViewSet(ModelViewSet):
     queryset = Book.objects.all()
     serializer_class = BookSerializer
-    permission_classes = [IsOwnerOrStaffreadOnly]
+    permission_classes = [IsAuthenticated]
     lookup_field = 'slug'  # Указываем slug в качестве идентификатора
+
+    def get_serializer_class(self):
+        if self.action == 'retrieve':
+            return BookDetailSerializer
+        return super().get_serializer_class()
 
     def perform_create(self, serializer):
         serializer.validated_data['owner'] = self.request.user
