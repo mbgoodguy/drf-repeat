@@ -1,5 +1,6 @@
 from django.contrib.auth.models import User
 from django.db import models
+from django.utils.text import slugify
 
 
 class Note(models.Model):
@@ -12,11 +13,17 @@ class Note(models.Model):
 
 
 class Book(models.Model):
+    slug = models.SlugField(unique=True, null=True, blank=True)
     name = models.CharField(max_length=255)
     price = models.DecimalField(max_digits=7, decimal_places=2)
     author_name = models.CharField(max_length=100)
     owner = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, related_name='my_books')
     reader = models.ManyToManyField(User, through='UserBookRelation', related_name='books')
+
+    def save(self, *args, **kwargs):
+        if not self.slug:
+            self.slug = slugify(self.name)
+        super().save(*args, **kwargs)
 
     def __str__(self):
         return f'{self.name}'

@@ -12,8 +12,8 @@ class NoteAdmin(admin.ModelAdmin):
 
 @admin.register(Book)
 class BookAdmin(admin.ModelAdmin):
-    fields = ('name', 'price', 'author_name', 'owner')
-    list_display = ('name', 'price', 'author_name', 'owner', 'id')
+    fields = ('name', 'price', 'author_name', 'owner', 'slug')
+    list_display = ('name', 'price', 'author_name', 'owner', 'slug', 'id')
 
 
 @admin.register(UserBookRelation)

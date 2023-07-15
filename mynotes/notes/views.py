@@ -16,6 +16,7 @@ class BooksModelViewSet(ModelViewSet):
     queryset = Book.objects.all()
     serializer_class = BookSerializer
     permission_classes = [IsOwnerOrStaffreadOnly]
+    lookup_field = 'slug'  # Указываем slug в качестве идентификатора
 
     def perform_create(self, serializer):
         serializer.validated_data['owner'] = self.request.user
