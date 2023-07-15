@@ -43,3 +43,7 @@ class UserBookRelation(models.Model):
     like = models.BooleanField(default=False)
     in_bookmarks = models.BooleanField(default=False)
     rate = models.PositiveSmallIntegerField(choices=RATE_CHOICES, null=True)
+
+    class Meta:
+        # Добавляем опцию unique_together для обеспечения уникальности отношений между пользователем и книгой
+        unique_together = ['user', 'book']

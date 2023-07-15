@@ -20,11 +20,26 @@ class BookSerializer(serializers.ModelSerializer):
         model = Book
 
 
-
-class UserBookRelationSerializer(ModelSerializer):
+class UserBookRelationSerializer(serializers.ModelSerializer):
     class Meta:
         model = UserBookRelation
-        fields = ('user', 'book', 'like', 'in_bookmarks', 'rate')
+        fields = ('user', 'book', 'like', 'in_bookmarks')
+
+    def create(self, validated_data):
+        # Проверяем, существует ли уже отношение между пользователем и книгой
+        user = validated_data['user']
+        book = validated_data['book']
+
+        try:
+            # Если отношение уже существует, обновляем его
+            relation = UserBookRelation.objects.get(user=user, book=book)
+            relation.like = validated_data.get('like', relation.like)
+            relation.in_bookmarks = validated_data.get('in_bookmarks', relation.in_bookmarks)
+            relation.save()
+            return relation
+        except UserBookRelation.DoesNotExist:
+            # Если отношение не существует, создаем новое
+            return UserBookRelation.objects.create(**validated_data)
 
 
 class BookDetailSerializer(serializers.Serializer):
